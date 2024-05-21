@@ -1,13 +1,11 @@
 #!/usr/bin/python3
-""" Module contains the entry point of the command interpreter
+"""
+Module contains the entry point of the command interpreter
 """
 
 import cmd
-import os
-
 from models import storage
 from models.base_model import BaseModel
-
 from models.engine.file_storage import FileStorage
 
 
@@ -24,12 +22,12 @@ class HBNBCommand(cmd.Cmd):
         return True
 
     def do_quit(self, line):
-        """exits if quit command is executed"""
+        """exits the interpreter if the "quit" command is executed"""
 
         return True
 
     def emptyline(self):
-        """return empty string if the line is empty"""
+        """returns (prints) an empty string if the line is empty"""
 
         return ""
 
@@ -42,16 +40,13 @@ class HBNBCommand(cmd.Cmd):
             print("** class doesn't exist **")
         else:
             instance = BaseModel()
-            storage.reload()
             storage.new(instance)
             instance.save()
             HBNBCommand.ids.append(instance.id)
             print(instance.id)
 
     def do_show(self, line):
-        """shows the string representation of the given instance'id"""
-
-        from models.engine.file_storage import FileStorage
+        """shows the string representation of the given instance's id"""
 
         if line == "" or len(line.split()) == 0:
             print("** class name missing **")
@@ -71,11 +66,10 @@ class HBNBCommand(cmd.Cmd):
                 print("** no instance found **")
             else:
                 instance_id = line.split()[1]
-                for k, v in storage.__objects.items():
+                for k, v in storage._FileStorage__objects.items():
                     if instance_id in k:
-                        print(storage.__objects[k])
+                        print(storage._FileStorage__objects[k])
                         break
-
 
     def do_destroy(self, line):
         """destroys an instance"""
@@ -98,14 +92,12 @@ class HBNBCommand(cmd.Cmd):
                 print("** no instance found **")
             else:
                 instance_id = line.split()[1]
-                for k, v in storage.__objects.items():
+                for k, v in storage._FileStorage__objects.items():
                     if instance_id in k:
-                        storage.__objects.pop(k)
+                        storage._FileStorage__objects.pop(k)
                         HBNBCommand.ids.remove(instance_id)
-                        os.remove(storage.__file_path)
                         storage.save()
                         break
-
 
     def do_all(self, line):
         """Prints all string representation of all instances"""
@@ -119,29 +111,38 @@ class HBNBCommand(cmd.Cmd):
         else:
             print("** class doesn't exist **")
 
-    # def do_update(self, line):
-    #     """updates instance's attributes"""
+    def do_update(self, line):
+        """updates instance's attributes"""
 
+        if len(line) == 0:
+            print("** class name missing **")
+        elif line.split()[0] != "BaseModel":
+            print("** class doesn't exist **")
+        elif len(line.split()) == 1:
+            print("** instance id missing **")
+        elif line.split()[1] not in "".join(storage._FileStorage__objects.keys()):
+            print("** no instance found **")
+        elif len(line.split()) == 2:
+            print("** attribute name missing **")
+        elif len(line.split()) == 3:
+            print("** value missing **")
+        else:
+            name = line.split()[2]
+            value = line.split()[3]
 
-    #     if len(line) == 0:
-    #         print("** class name missing **")
-    #     elif line.split()[0] != "BaseModel":
-    #         print("** class doesn't exist **")
-    #     elif len(line.split()) == 1:
-    #         print("** instance id missing **")
-    #     elif line.split()[1] not in "".join(storage._FileStorage__objects.keys()):
-    #         print("** no instance found **")
-    #     elif len(line.split()) == 2:
-    #         print("** attribute name missing **")
-    #     elif len(line.split()) == 3:
-    #         print("** value missing **")
-    #     else:
-    #         name = line.split()[2]
-    #         value = line.split()[3]
-    #         for k, v in storage._FileStorage__objects.items():
-    #             if line.split()[1] in k:
-    #                 v[str(name)] = value
-    #                 break
+            if value[0] in ["\'", "\""] and value[-1] not in ["\'", "\""]:
+                for i in range(4, len(line.split())):
+                    value += " " + line.split()[i]
+                    if line.split()[i][-1] in ["\'", "\""]:
+                        break
+            if value[0] in ["\'", "\""]:
+                value = value[1:-1]
+
+            for k, v in storage._FileStorage__objects.items():
+                if line.split()[1] in k:
+                    v.__setattr__(name, value)
+                    v.save()
+                    break
 
 
 if __name__ == '__main__':
