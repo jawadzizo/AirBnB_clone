@@ -37,7 +37,7 @@ class HBNBCommand(cmd.Cmd):
 
         if line == "":
             print("** class name missing **")
-        elif line not in ["BaseModel", "User"]:
+        elif line.split()[0] not in ["BaseModel", "User"]:
             print("** class doesn't exist **")
         else:
             if line == "BaseModel":
@@ -79,7 +79,7 @@ class HBNBCommand(cmd.Cmd):
     def do_destroy(self, line):
         """destroys an instance"""
 
-        if line == "" or len(line.split()) == 0:
+        if line == "":
             print("** class name missing **")
 
         elif len(line.split()) < 2:
@@ -91,7 +91,7 @@ class HBNBCommand(cmd.Cmd):
                 print("** instance id missing **")
 
         else:
-            if line.split()[0] != "BaseModel" or line.split()[0] != "User":
+            if line.split()[0] not in ["BaseModel", "User"]:
                 print("** class doesn't exist **")
             elif line.split()[1] not in HBNBCommand.ids:
                 print("** no instance found **")
