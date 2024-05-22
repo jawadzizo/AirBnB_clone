@@ -18,7 +18,7 @@ class FileStorage:
         """
 
         self.reload()
-        return self.__objects
+        return FileStorage.__objects
 
     def new(self, obj):
         """
@@ -50,14 +50,14 @@ class FileStorage:
         from models.user import User
 
         try:
-            f = open(self.__file_path, "r")
+            f = open(FileStorage.__file_path, "r")
 
             objects = json.load(f)
 
             for k, v in objects.items():
                 if v["__class__"] == "BaseModel":
                     basemodel = BaseModel(**v)
-                    self.__objects[k] = basemodel
+                    FileStorage.__objects[k] = basemodel
                 elif v["__class__"] == "User":
                     user = User(**v)
                     if "email" in  v.keys():
@@ -69,9 +69,9 @@ class FileStorage:
                     if "last_name" in  v.keys():
                         user.last_name = v["last_name"]
 
-                    self.__objects[k] = user
+                    FileStorage.__objects[k] = user
 
             f.close()
 
         except Exception as e:
-            self.__objects = {}
+            FileStorage.__objects = {}
