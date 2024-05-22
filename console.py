@@ -10,7 +10,7 @@ from models.user import User
 from models.engine.file_storage import FileStorage
 
 
-obj_classes = ["BaseModel", "User"]
+obj_classes = ["BaseModel", "User", "Place", "State", "City", "Amenity", "Review"]
 
 class HBNBCommand(cmd.Cmd):
     """inherits the Cmd class"""
@@ -35,17 +35,14 @@ class HBNBCommand(cmd.Cmd):
         return ""
 
     def do_create(self, line):
-        """creates a new BaseModel instance"""
+        """creates a new object instance"""
 
         if line == "":
             print("** class name missing **")
         elif line.split()[0] not in obj_classes:
             print("** class doesn't exist **")
         else:
-            if line == "BaseModel":
-                instance = BaseModel()
-            elif line == "User":
-                instance = User()
+            instance = eval(line.split()[0])
 
             storage.new(instance)
             instance.save()
@@ -97,7 +94,7 @@ class HBNBCommand(cmd.Cmd):
 
         instances = []
 
-        if len(line.split()) == 0 or line.split()[0] in ["BaseModel", "User"]:
+        if len(line.split()) == 0 or line.split()[0] in obj_classes:
             for k, v in storage._FileStorage__objects.items():
                 instances.append(str(v))
             print(instances)

@@ -46,7 +46,12 @@ class FileStorage:
         deserializes the JSON file to __objects
         """
 
+        from models.amenity import Amenity
         from models.base_model import BaseModel
+        from models.city import City
+        from models.place import Place
+        from models.review import Review
+        from models.state import State
         from models.user import User
 
         try:
@@ -68,8 +73,44 @@ class FileStorage:
                         user.first_name = v["first_name"]
                     if "last_name" in  v.keys():
                         user.last_name = v["last_name"]
-
                     FileStorage.__objects[k] = user
+                elif v["__class__"] == "State":
+                    state = State()
+                    if "name" in  v.keys():
+                        state.name = v["name"]
+                    FileStorage.__objects[k] = state
+                elif v["__class__"] == "City":
+                    city = City()
+                    if "name" in  v.keys():
+                        city.name = v["name"]
+                    if "state_id" in  v.keys():
+                        city.name = v["state_id"]
+                    FileStorage.__objects[k] = city
+                elif v["__class__"] == "Place":
+                    place = Place()
+                    if "name" in  v.keys():
+                        place.name = v["name"]
+                    if "city_id" in  v.keys():
+                        place.name = v["city_id"]
+                    if "user_id" in  v.keys():
+                        place.name = v["user_id"]
+                    if "description" in  v.keys():
+                        place.name = v["description"]
+                    if "number_rooms" in  v.keys():
+                        place.name = int(v["number_rooms"])
+                    if "number_bathrooms" in  v.keys():
+                        place.name = int(v["number_bathrooms"])
+                    if "max_guest" in  v.keys():
+                        place.name = int(v["max_guest"])
+                    if "price_by_night" in  v.keys():
+                        place.name = int(v["price_by_night"])
+                    if "latitude" in  v.keys():
+                        place.name = float(v["latitude"])
+                    if "longitude" in  v.keys():
+                        place.name = float(v["longitude"])
+                    if "amenity_ids" in  v.keys():
+                        place.name = v["amenity_ids"]
+                    FileStorage.__objects[k] = place
 
             f.close()
 
