@@ -17,7 +17,8 @@ class FileStorage:
         returns the dictionary __objects
         """
 
-        return FileStorage.__objects
+        self.reload()
+        return self.__objects
 
     def new(self, obj):
         """
@@ -46,16 +47,32 @@ class FileStorage:
         """
 
         from models.base_model import BaseModel
+        from models.user import User
 
         try:
-            f = open(FileStorage.__file_path, "r")
+            f = open(self.__file_path, "r")
 
             objects = json.load(f)
 
             for k, v in objects.items():
-                FileStorage.__objects[k] = BaseModel(**v)
+                if v["__class__"] == "BaseModel":
+                    basemodel = BaseModel(**v)
+                    self.__objects[k] = basemodel
+                elif v["__class__"] == "User":
+                    user = User(**v)
+                    if "email" in  v.keys():
+                        user.email = v["email"]
+                    if "password" in  v.keys():
+                        user.password = v["password"]
+                    if "password" in  v.keys():
+                        user.first_name = v["first_name"]
+                    if "last_name" in  v.keys():
+                        user.last_name = v["last_name"]
+
+                    self.__objects[k] = user
 
             f.close()
 
-        except Exception:
-            pass
+        except Exception as e:
+            print(f"error: {e}")
+            self.__objects = {}

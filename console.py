@@ -6,6 +6,7 @@ Module contains the entry point of the command interpreter
 import cmd
 from models import storage
 from models.base_model import BaseModel
+from models.user import User
 from models.engine.file_storage import FileStorage
 
 
@@ -36,10 +37,14 @@ class HBNBCommand(cmd.Cmd):
 
         if line == "":
             print("** class name missing **")
-        elif line != "BaseModel":
+        elif line not in ["BaseModel", "User"]:
             print("** class doesn't exist **")
         else:
-            instance = BaseModel()
+            if line == "BaseModel":
+                instance = BaseModel()
+            elif line == "User":
+                instance = User()
+
             storage.new(instance)
             instance.save()
             HBNBCommand.ids.append(instance.id)
@@ -54,13 +59,13 @@ class HBNBCommand(cmd.Cmd):
         elif len(line.split()) < 2:
             if "-" in line:
                 print("** class name missing **")
-            elif "BaseModel" not in line:
+            elif "BaseModel" not in line or "User" not in line:
                 print("** class doesn't exist **")
-            elif "BaseModel" in line:
+            elif "BaseModel" in line or "User" in line:
                 print("** instance id missing **")
 
         else:
-            if line.split()[0] != "BaseModel":
+            if line.split()[0] not in ["BaseModel", "User"]:
                 print("** class doesn't exist **")
             elif line.split()[1] not in HBNBCommand.ids:
                 print("** no instance found **")
@@ -86,7 +91,7 @@ class HBNBCommand(cmd.Cmd):
                 print("** instance id missing **")
 
         else:
-            if line.split()[0] != "BaseModel":
+            if line.split()[0] != "BaseModel" or line.split()[0] != "User":
                 print("** class doesn't exist **")
             elif line.split()[1] not in HBNBCommand.ids:
                 print("** no instance found **")
@@ -104,7 +109,7 @@ class HBNBCommand(cmd.Cmd):
 
         instances = []
 
-        if len(line.split()) == 0 or line.split()[0] == "BaseModel":
+        if len(line.split()) == 0 or line.split()[0] in ["BaseModel", "User"]:
             for k, v in storage._FileStorage__objects.items():
                 instances.append(str(v))
             print(instances)
