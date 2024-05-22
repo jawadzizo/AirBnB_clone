@@ -5,7 +5,6 @@ Module contains the entry point of the command interpreter
 
 import cmd
 from models import storage
-from models.base_model import BaseModel
 from models.user import User
 from models.engine.file_storage import FileStorage
 
@@ -24,7 +23,15 @@ class HBNBCommand(cmd.Cmd):
     """inherits the Cmd class"""
 
     prompt = "(hbnb) "
-    ids = []
+    ids = {
+        "BaseModel" : [],
+        "User" : [],
+        "Place" : [],
+        "State" : [],
+        "City" : [],
+        "Amenity": [],
+        "Review" : []
+    }
 
     def do_EOF(self, line):
         """exits the interpreter if EOF reached"""
@@ -67,7 +74,7 @@ class HBNBCommand(cmd.Cmd):
 
             storage.new(instance)
             instance.save()
-            HBNBCommand.ids.append(instance.id)
+            HBNBCommand.ids[line.split()[0]].append(instance.id)
             print(instance.id)
 
     def do_show(self, line):
@@ -79,13 +86,13 @@ class HBNBCommand(cmd.Cmd):
             print("** class doesn't exist **")
         elif len(line.split()) == 1:
             print("** instance id missing **")
-        elif line.split()[1] not in HBNBCommand.ids:
+        elif line.split()[1] not in HBNBCommand.ids[line.split()[0]]:
             print("** no instance found **")
 
         else:
             instance_id = line.split()[1]
             for k, v in storage._FileStorage__objects.items():
-                if instance_id in k:
+                if instance_id in k and line.split()[0] in k:
                     print(storage._FileStorage__objects[k])
                     break
 
@@ -98,7 +105,7 @@ class HBNBCommand(cmd.Cmd):
             print("** class doesn't exist **")
         elif len(line.split()) == 1:
             print("** instance id missing **")
-        elif line.split()[1] not in HBNBCommand.ids:
+        elif line.split()[1] not in HBNBCommand.ids[line.split()[0]]:
             print("** no instance found **")
 
         else:
@@ -106,7 +113,7 @@ class HBNBCommand(cmd.Cmd):
             for k, v in storage._FileStorage__objects.items():
                 if instance_id in k:
                     storage._FileStorage__objects.pop(k)
-                    HBNBCommand.ids.remove(instance_id)
+                    HBNBCommand.ids[line.split()[0]].remove(instance_id)
                     storage.save()
                     break
 
@@ -115,12 +122,19 @@ class HBNBCommand(cmd.Cmd):
 
         instances = []
 
-        if len(line.split()) == 0 or line.split()[0] in obj_classes:
+        if line == "":
             for k, v in storage._FileStorage__objects.items():
                 instances.append(str(v))
             print(instances)
-        else:
+
+        elif line.split()[0] not in obj_classes:
             print("** class doesn't exist **")
+
+        else:
+            for k, v in storage._FileStorage__objects.items():
+                if line.split()[0] in k:
+                    instances.append(str(v))
+            print(instances)
 
     def do_update(self, line):
         """updates instance's attributes"""
