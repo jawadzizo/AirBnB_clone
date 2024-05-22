@@ -10,6 +10,8 @@ from models.user import User
 from models.engine.file_storage import FileStorage
 
 
+obj_classes = ["BaseModel", "User"]
+
 class HBNBCommand(cmd.Cmd):
     """inherits the Cmd class"""
 
@@ -37,7 +39,7 @@ class HBNBCommand(cmd.Cmd):
 
         if line == "":
             print("** class name missing **")
-        elif line.split()[0] not in ["BaseModel", "User"]:
+        elif line.split()[0] not in obj_classes:
             print("** class doesn't exist **")
         else:
             if line == "BaseModel":
@@ -53,56 +55,42 @@ class HBNBCommand(cmd.Cmd):
     def do_show(self, line):
         """shows the string representation of the given instance's id"""
 
-        if line == "" or len(line.split()) == 0:
+        if line == "":
             print("** class name missing **")
-
-        elif len(line.split()) < 2:
-            if "-" in line:
-                print("** class name missing **")
-            elif "BaseModel" not in line or "User" not in line:
-                print("** class doesn't exist **")
-            elif "BaseModel" in line or "User" in line:
-                print("** instance id missing **")
+        elif line.split()[0] not in obj_classes:
+            print("** class doesn't exist **")
+        elif len(line.split()) == 1:
+            print("** instance id missing **")
+        elif line.split()[1] not in HBNBCommand.ids:
+            print("** no instance found **")
 
         else:
-            if line.split()[0] not in ["BaseModel", "User"]:
-                print("** class doesn't exist **")
-            elif line.split()[1] not in HBNBCommand.ids:
-                print("** no instance found **")
-            else:
-                instance_id = line.split()[1]
-                for k, v in storage._FileStorage__objects.items():
-                    if instance_id in k:
-                        print(storage._FileStorage__objects[k])
-                        break
+            instance_id = line.split()[1]
+            for k, v in storage._FileStorage__objects.items():
+                if instance_id in k:
+                    print(storage._FileStorage__objects[k])
+                    break
 
     def do_destroy(self, line):
         """destroys an instance"""
 
         if line == "":
             print("** class name missing **")
-
-        elif len(line.split()) < 2:
-            if "-" in line:
-                print("** class name missing **")
-            elif "BaseModel" not in line:
-                print("** class doesn't exist **")
-            elif "BaseModel" in line:
-                print("** instance id missing **")
+        elif line.split()[0] not in obj_classes:
+            print("** class doesn't exist **")
+        elif len(line.split()) == 1:
+            print("** instance id missing **")
+        elif line.split()[1] not in HBNBCommand.ids:
+            print("** no instance found **")
 
         else:
-            if line.split()[0] not in ["BaseModel", "User"]:
-                print("** class doesn't exist **")
-            elif line.split()[1] not in HBNBCommand.ids:
-                print("** no instance found **")
-            else:
-                instance_id = line.split()[1]
-                for k, v in storage._FileStorage__objects.items():
-                    if instance_id in k:
-                        storage._FileStorage__objects.pop(k)
-                        HBNBCommand.ids.remove(instance_id)
-                        storage.save()
-                        break
+            instance_id = line.split()[1]
+            for k, v in storage._FileStorage__objects.items():
+                if instance_id in k:
+                    storage._FileStorage__objects.pop(k)
+                    HBNBCommand.ids.remove(instance_id)
+                    storage.save()
+                    break
 
     def do_all(self, line):
         """Prints all string representation of all instances"""
@@ -121,11 +109,11 @@ class HBNBCommand(cmd.Cmd):
 
         if len(line) == 0:
             print("** class name missing **")
-        elif line.split()[0] != "BaseModel":
+        elif line.split()[0] not in obj_classes:
             print("** class doesn't exist **")
         elif len(line.split()) == 1:
             print("** instance id missing **")
-        elif line.split()[1] not in "".join(storage._FileStorage__objects.keys()):
+        elif line.split()[1] not in HBNBCommand.ids:
             print("** no instance found **")
         elif len(line.split()) == 2:
             print("** attribute name missing **")
