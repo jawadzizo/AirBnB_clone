@@ -9,6 +9,14 @@ from models.base_model import BaseModel
 from models.user import User
 from models.engine.file_storage import FileStorage
 
+from models.amenity import Amenity
+from models.base_model import BaseModel
+from models.city import City
+from models.place import Place
+from models.review import Review
+from models.state import State
+from models.user import User
+
 
 obj_classes = ["BaseModel", "User", "Place", "State", "City", "Amenity", "Review"]
 
@@ -42,7 +50,20 @@ class HBNBCommand(cmd.Cmd):
         elif line.split()[0] not in obj_classes:
             print("** class doesn't exist **")
         else:
-            instance = eval(line.split()[0])
+            if line.split()[0] == "BaseModel":
+                instance = BaseModel()
+            elif line.split()[0] == "User":
+                instance = User()
+            elif line.split()[0] == "Place":
+                instance = Place()
+            elif line.split()[0] == "State":
+                instance = State()
+            elif line.split()[0] == "City":
+                instance = City()
+            elif line.split()[0] == "Amenity":
+                instance = Amenity()
+            elif line.split()[0] == "Review":
+                instance = Review()
 
             storage.new(instance)
             instance.save()
