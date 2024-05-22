@@ -145,7 +145,7 @@ class HBNBCommand(cmd.Cmd):
             print("** class doesn't exist **")
         elif len(line.split()) == 1:
             print("** instance id missing **")
-        elif line.split()[1] not in HBNBCommand.ids:
+        elif line.split()[1] not in HBNBCommand.ids[line.split()[0]]:
             print("** no instance found **")
         elif len(line.split()) == 2:
             print("** attribute name missing **")
@@ -164,7 +164,7 @@ class HBNBCommand(cmd.Cmd):
                 value = value[1:-1]
 
             for k, v in storage._FileStorage__objects.items():
-                if line.split()[1] in k:
+                if line.split()[0] in k and line.split()[1] in k:
                     v.__setattr__(name, value)
                     v.save()
                     break
