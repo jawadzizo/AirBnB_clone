@@ -52,74 +52,81 @@ class HBNBCommand(cmd.Cmd):
     def do_create(self, line):
         """creates a new object instance"""
 
+        args = line.split()
+
         if line == "":
             print("** class name missing **")
-        elif line.split()[0] not in obj_classes:
+        elif args[0] not in obj_classes:
             print("** class doesn't exist **")
         else:
-            if line.split()[0] == "BaseModel":
+            if args[0] == "BaseModel":
                 instance = BaseModel()
-            elif line.split()[0] == "User":
+            elif args[0] == "User":
                 instance = User()
-            elif line.split()[0] == "Place":
+            elif args[0] == "Place":
                 instance = Place()
-            elif line.split()[0] == "State":
+            elif args[0] == "State":
                 instance = State()
-            elif line.split()[0] == "City":
+            elif args[0] == "City":
                 instance = City()
-            elif line.split()[0] == "Amenity":
+            elif args[0] == "Amenity":
                 instance = Amenity()
-            elif line.split()[0] == "Review":
+            elif args[0] == "Review":
                 instance = Review()
 
             storage.new(instance)
             instance.save()
-            HBNBCommand.ids[line.split()[0]].append(instance.id)
+            HBNBCommand.ids[args[0]].append(instance.id)
             print(instance.id)
 
     def do_show(self, line):
         """shows the string representation of the given instance's id"""
 
+        args = line.split()
+
         if line == "":
             print("** class name missing **")
-        elif line.split()[0] not in obj_classes:
+        elif args[0] not in obj_classes:
             print("** class doesn't exist **")
-        elif len(line.split()) == 1:
+        elif len(args) == 1:
             print("** instance id missing **")
-        elif line.split()[1] not in HBNBCommand.ids[line.split()[0]]:
+        elif args[1] not in HBNBCommand.ids[args[0]]:
             print("** no instance found **")
 
         else:
-            instance_id = line.split()[1]
+            instance_id = args[1]
             for k, v in storage._FileStorage__objects.items():
-                if instance_id in k and line.split()[0] in k:
+                if instance_id in k and args[0] in k:
                     print(storage._FileStorage__objects[k])
                     break
 
     def do_destroy(self, line):
         """destroys an instance"""
 
+        args = line.split()
+
         if line == "":
             print("** class name missing **")
-        elif line.split()[0] not in obj_classes:
+        elif args[0] not in obj_classes:
             print("** class doesn't exist **")
-        elif len(line.split()) == 1:
+        elif len(args) == 1:
             print("** instance id missing **")
-        elif line.split()[1] not in HBNBCommand.ids[line.split()[0]]:
+        elif args[1] not in HBNBCommand.ids[args[0]]:
             print("** no instance found **")
 
         else:
-            instance_id = line.split()[1]
+            instance_id = args[1]
             for k, v in storage._FileStorage__objects.items():
                 if instance_id in k:
                     storage._FileStorage__objects.pop(k)
-                    HBNBCommand.ids[line.split()[0]].remove(instance_id)
+                    HBNBCommand.ids[args[0]].remove(instance_id)
                     storage.save()
                     break
 
     def do_all(self, line):
         """Prints all string representation of all instances"""
 
+        args = line.split()
         instances = []
 
         if line == "":
@@ -127,44 +134,46 @@ class HBNBCommand(cmd.Cmd):
                 instances.append(str(v))
             print(instances)
 
-        elif line.split()[0] not in obj_classes:
+        elif args[0] not in obj_classes:
             print("** class doesn't exist **")
 
         else:
             for k, v in storage._FileStorage__objects.items():
-                if line.split()[0] in k:
+                if args[0] in k:
                     instances.append(str(v))
             print(instances)
 
     def do_update(self, line):
         """updates instance's attributes"""
 
-        if len(line) == 0:
+        args = line.split()
+
+        if line == "":
             print("** class name missing **")
-        elif line.split()[0] not in obj_classes:
+        elif args[0] not in obj_classes:
             print("** class doesn't exist **")
-        elif len(line.split()) == 1:
+        elif len(args) == 1:
             print("** instance id missing **")
-        elif line.split()[1] not in HBNBCommand.ids[line.split()[0]]:
+        elif args[1] not in HBNBCommand.ids[line.split()[0]]:
             print("** no instance found **")
-        elif len(line.split()) == 2:
+        elif len(args) == 2:
             print("** attribute name missing **")
-        elif len(line.split()) == 3:
+        elif len(args) == 3:
             print("** value missing **")
         else:
-            name = line.split()[2]
-            value = line.split()[3]
+            name = args[2]
+            value = args[3]
 
             if value[0] in ["\'", "\""] and value[-1] not in ["\'", "\""]:
-                for i in range(4, len(line.split())):
-                    value += " " + line.split()[i]
-                    if line.split()[i][-1] in ["\'", "\""]:
+                for i in range(4, len(args)):
+                    value += " " + args[i]
+                    if args[i][-1] in ["\'", "\""]:
                         break
             if value[0] in ["\'", "\""]:
                 value = value[1:-1]
 
             for k, v in storage._FileStorage__objects.items():
-                if line.split()[0] in k and line.split()[1] in k:
+                if args[0] in k and args[1] in k:
                     v.__setattr__(name, value)
                     v.save()
                     break
@@ -172,4 +181,3 @@ class HBNBCommand(cmd.Cmd):
 
 if __name__ == '__main__':
     HBNBCommand().cmdloop()
-
