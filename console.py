@@ -59,23 +59,9 @@ class HBNBCommand(cmd.Cmd):
         elif args[0] not in obj_classes:
             print("** class doesn't exist **")
         else:
-            if args[0] == "BaseModel":
-                instance = BaseModel()
-            elif args[0] == "User":
-                instance = User()
-            elif args[0] == "Place":
-                instance = Place()
-            elif args[0] == "State":
-                instance = State()
-            elif args[0] == "City":
-                instance = City()
-            elif args[0] == "Amenity":
-                instance = Amenity()
-            elif args[0] == "Review":
-                instance = Review()
-
+            instance = eval(f"{args[0]}()")
             storage.new(instance)
-            instance.save()
+            storage.save()
             HBNBCommand.ids[args[0]].append(instance.id)
             print(instance.id)
 
